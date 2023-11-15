@@ -1,24 +1,29 @@
 import { PrismaClient } from '@prisma/client';
 import * as readlineSync from 'readline-sync';
+import { uploadFile } from './uploadFile';
 
 const prisma = new PrismaClient();
 
 async function cadastrarEstudante() {
-  console.log('Cadastro de Estudante');
-  const nome = readlineSync.question('Digite o nome do estudante: ');
-  const curso_id = readlineSync.question('Digite o ID do curso: ');
+    console.log('Cadastro de Estudante');
+    const nome = readlineSync.question('Digite o nome do estudante: ');
+    const curso_id = readlineSync.question('Digite o ID do curso: ');
 
-  try {
-      const curso = await prisma.estudantes.create({
-          data: {
-              nome: nome,
-              curso_id: parseInt(curso_id, 10)
-          }
-      });
+    try {
+        const estudante = await prisma.estudantes.create({
+            data: {
+                nome: nome,
+                curso_id: parseInt(curso_id, 10)
+            }
+        });
 
-      console.log(`Estudante ${curso.nome} cadastrado com sucesso.`);
-  } catch (error) {
-      console.error('Erro ao cadastrar estudante:', error);
+        console.log(`Estudante ${estudante.nome} cadastrado com sucesso.`);
+
+        const fileName = `./images/${estudante.nome}.jpg`;
+        const destinationPath = `estudantes/${estudante.nome}.jpg`    
+        await uploadFile(fileName, destinationPath);
+    } catch (error) {
+        console.error('Erro ao cadastrar estudante:', error);
   }
 }
 
@@ -27,13 +32,13 @@ async function excluirEstudante() {
     const id = readlineSync.question('Digite o ID do estudante: ');
 
     try {
-        const curso = await prisma.estudantes.delete({
+        const estudante = await prisma.estudantes.delete({
             where: { 
                 id: parseInt(id, 10) 
             }
         });
 
-        console.log(`Estudante ${curso.nome} excluído com sucesso.`);
+        console.log(`Estudante ${estudante.nome} excluído com sucesso.`);
     } catch (error) {
         console.error('Erro ao excluir estudante:', error);
     }
@@ -43,7 +48,7 @@ async function alterarEstudante() {
   console.log('Alteração de Estudante');
   const id = readlineSync.question('Digite o ID do estudante: ');
 
-  try {
+    try {
         const estudante = await prisma.estudantes.findUnique({
             where: { 
                 id: parseInt(id, 10) 
@@ -69,7 +74,7 @@ async function alterarEstudante() {
         });
 
         console.log(`Estudante ${estudante.nome} alterado para ${novoNome} com sucesso.`);
-  } catch (error) {
+    } catch (error) {
         console.error('Erro ao alterar estudante:', error);
   }
 }
@@ -86,6 +91,9 @@ async function cadastrarCurso() {
         });
 
         console.log(`Curso ${curso.nome} cadastrado com sucesso.`);
+        const fileName = `./images/${curso.nome}.jpg`;
+        const destinationPath = `cursos/${curso.nome}.jpg`    
+        await uploadFile(fileName, destinationPath);
     } catch (error) {
         console.error('Erro ao cadastrar curso:', error);
     }

@@ -18,6 +18,8 @@
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",
+    "firebase": "^10.6.0",
+    "firebase-admin": "^11.11.0",
     "readline-sync": "^1.4.10"
   }
 }
